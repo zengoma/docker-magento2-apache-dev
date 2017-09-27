@@ -1,0 +1,33 @@
+version: "3"
+services:
+
+  magento2-dev:
+    restart: unless-stopped
+    networks:
+      - back
+      - front
+    image: zengoma/magento2-dev
+    ports:
+      - "80:80"
+    links:
+      - db:db
+    volumes:
+      - ./volumes/magento2:/var/www/html
+
+  db:
+    restart: unless-stopped
+    networks:
+      - back
+    image: percona
+    volumes:
+      - ./volumes/database:/var/www/html
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+networks:
+  front:
+  back:
+
