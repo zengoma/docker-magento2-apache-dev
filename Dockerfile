@@ -25,6 +25,7 @@ RUN docker-php-ext-configure \
     pdo_mysql \
     xsl \
     zip \
+    soap \
     opcache
 
 # set recommended PHP.ini settings

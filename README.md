@@ -19,7 +19,7 @@ services:
     networks:
       - back
       - front
-    image: zengoma/magento2-dev
+    image: zengoma/magento2-apache-dev
     ports:
       - "80:80"
     links:
@@ -73,4 +73,5 @@ If you do choose to host your dev server on a VPS I would recommend that you lea
 ## TODO
 
 * Add docker-compose examples with redis and varnish.
-* Automatically create a project from environmental variables if /var/www/html is empty. 
+* Automatically create a project from environmental variables if /var/www/html is empty.
+* Instructions for configuring xdebug

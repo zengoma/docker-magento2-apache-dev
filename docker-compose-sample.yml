@@ -6,7 +6,7 @@ services:
     networks:
       - back
       - front
-    image: zengoma/magento2-dev
+    image: zengoma/magento2-apache-dev
     ports:
       - "80:80"
     links:
