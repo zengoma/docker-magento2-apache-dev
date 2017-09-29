@@ -13,15 +13,19 @@ RUN apt-get update \
     wget \
     lynx \
     psmisc \
+    cron \
   && apt-get clean
+
+RUN mkdir -p /var/spool/cron/crontabs/ \
+  && touch /var/spool/cron/crontabs/root
 
 RUN docker-php-ext-configure \
     gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/; \
   docker-php-ext-install \
     gd \
     intl \
-    mbstring \
     mcrypt \
+    mbstring \
     pdo_mysql \
     xsl \
     zip \
@@ -38,6 +42,7 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 		echo 'opcache.enable_cli=1'; \
 		echo 'opcache.enable=1'; \
+		echo 'opcache.save_comments=1'; \
 		echo 'opcache.revalidate_path=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
@@ -45,8 +50,8 @@ RUN { \
 ADD php.ini /usr/local/etc/php/conf.d/magento2.ini
 
 
-RUN usermod -u 1000 www-data; \
-  a2enmod rewrite;
+RUN usermod -a -G www-data root; \
+    a2enmod rewrite;
 
 ##
 # Install composer
@@ -63,5 +68,26 @@ RUN curl -L https://getcomposer.org/installer -o composer-setup.php && \
 
 VOLUME /var/www/html
 
+# Defaults
+
+ENV MYSQL_USER magento2
+ENV MYSQL_DATABASE magento2
+ENV MYSQL_PASSWORD password
+ENV DB_HOST db
+ENV TIMEZONE UTC
+ENV CURRENCY USD
+ENV LANGUAGE en_US
+ENV USE_SECURE 0
+ENV USE_SECURE_ADMIN 0
+ENV DEPLOY_MODE developer
+ENV MAGENTO_VERSION 2.2.0
+ENV BASE_URL http://127.0.0.1
+ENV BACKEND_FRONTNAME admin
+ENV USE_REWRITES 0
+
+COPY 000-default.conf /etc/apache2/sites-available/
+COPY docker-entrypoint.sh /usr/local/bin/
+
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD ["apache2-foreground"]

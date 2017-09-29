@@ -3,9 +3,6 @@ services:
 
   magento2-dev:
     restart: unless-stopped
-    networks:
-      - back
-      - front
     image: zengoma/magento2-apache-dev
     ports:
       - "80:80"
@@ -13,11 +10,23 @@ services:
       - db:db
     volumes:
       - ./volumes/magento2:/var/www/html
+    environment:
+      DB_HOST: ${DB_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MAGENTO_PUBLIC_KEY: ${MAGENTO_PUBLIC_KEY}
+      MAGENTO_PRIVATE_KEY: ${MAGENTO_PRIVATE_KEY}
+      ADMIN_FIRSTNAME: ${ADMIN_FIRSTNAME}
+      ADMIN_LASTNAME: ${ADMIN_LASTNAME}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_USER: ${ADMIN_USER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+
+      # You should add the extra variables you want to configure (this is the bare minimum for an automated build)
 
   db:
     restart: unless-stopped
-    networks:
-      - back
     image: percona
     volumes:
       - ./volumes/database:/var/www/html
@@ -26,8 +35,4 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-
-networks:
-  front:
-  back:
 
