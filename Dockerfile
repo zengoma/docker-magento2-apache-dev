@@ -87,6 +87,7 @@ ENV USE_REWRITES 0
 
 COPY 000-default.conf /etc/apache2/sites-available/
 COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 

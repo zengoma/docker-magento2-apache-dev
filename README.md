@@ -1,22 +1,21 @@
-# Simple Apache/Magento 2 Dev Docker container
+## Simple Apache/Magento 2 Dev Docker container
 
 A simple Magento 2 development environment container for docker. Please note this container is for development purposes
 only and is not suitable for use in production. This container is designed to install the integrator package of magento CE
 for magento 2 module and theme developers.
 
-## Installation options.
+### Installation options.
 
 For the sake of convenience and versatility the container can automate the entire installation process or you may choose
 to manually oversee each step of the installation. You may also wish to restore a backup via container shell access. The installation 
 can be controlled using environmental variables. See the variables section for more information. 
 
-## Volumes
+### Volumes
 
 * /var/www/html (the magento2 installation root)
 
-## Environmental variables:
+### Environmental variables:
 
-### Using the environmental variables to determine install scenario
 
 #### Complete manual installation:
 
@@ -38,10 +37,6 @@ You need to declare as a minimum the following variables:
 
 You have decided to automate composer create-project AND install magento 2. In this scenario you should at least declare:
 
-* MYSQL_USER
-* MYSQL_PASSWORD
-* MYSQL_DATABASE
-* DB_HOST
 * MAGENTO_PUBLIC_KEY
 * MAGENTO_PRIVATE_KEY
 * ADMIN_FIRSTNAME
@@ -52,7 +47,7 @@ You have decided to automate composer create-project AND install magento 2. In t
 
 The other options will revert to the default value, but you should declare these if you wish to override the default.
 
-### Complete list of configurable variables with defaults:
+#### Complete list of configurable variables with defaults:
 
 * MYSQL_USER: database user (default: magento2)
 * MYSQL_PASSWORD: database password (default: password)
@@ -79,9 +74,9 @@ database.
 *** Optional for fresh installs
 
 
-## Setup
+### Setup
 
-### Linux:
+#### Linux:
 
 Create a docker-compose.yml file (This is a bare minimum setup for fresh install on localhost). Check out the repo for
 .env.sample file. Advanced users may use the docker run command to spin up the containers.
@@ -132,7 +127,7 @@ The first time you bring up the container you will want to omit the -d argument 
 This is helpful for debugging parameters that have been set incorrectly and see the progress of your installation.
 
 
-### Windows and Mac:
+#### Windows and Mac:
 
 The setup remains the same as Linux, with one exception: I would highly recommend that you do not create a mounted volume
 for the magento2-dev container. i.e remove "- ./volumes/magento2:/var/www/html". This will seriously hamper performance.
@@ -141,7 +136,7 @@ is to spin up a linux development server and sync the filesystem remotely with y
 
 If you do choose to host your dev server on a VPS I would recommend that you leave it turned off when you are not developing.
 
-## Installing sample data
+### Installing sample data
 
 ```bash
 docker-compose exec magento2-dev ./bin/magento sampledata:deploy && ./bin/magento setup:upgrade
@@ -149,7 +144,7 @@ docker-compose exec magento2-dev ./bin/magento sampledata:deploy && ./bin/magent
 
 Where "magento2-dev" is the name of your magento2 container.
 
-## TODO
+### TODO
 
 * Add docker-compose examples with redis and varnish.
 * Automatically create a project from environmental variables if /var/www/html is empty.
@@ -157,7 +152,7 @@ Where "magento2-dev" is the name of your magento2 container.
 * Instructions for configuring xdebug
 * Instructions for unison
 
-## Known issues:
+### Known issues:
 
 There are a few file permission errors that have been plaguing this project. Please be kind and point out any issues you
 discover. 
