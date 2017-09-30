@@ -3,6 +3,7 @@ set -euo pipefail
 
 set_permissions(){
     chown -R www-data:www-data $PWD;
+    chown chmod g+s $PWD; # Very permissive, this will get you fired in production.
 }
 
 reset_generated(){
@@ -87,6 +88,7 @@ if ! [ -e app/etc/env.php ]; then
           --use-rewrites=${USE_REWRITES}
 
          ./bin/magento deploy:mode:set developer;
+
          set_permissions;
 
     fi
@@ -106,11 +108,11 @@ if ! [ -e /var/spool/cron/crontabs/www-data ]; then
     cron_jobs;
 fi
 
-#if ! [ -e magento_umask ]; then
-#
-#    echo 'magento_umask 002' > magento_umask;
-#
-#fi
+if ! [ -e magento_umask ] && [ -e index.php -a -e bin/magento ]; then
+
+    echo 'magento_umask 002' > magento_umask;
+
+fi
 
 service ssh start;
 

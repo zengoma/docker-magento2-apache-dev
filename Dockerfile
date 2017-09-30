@@ -34,6 +34,16 @@ RUN docker-php-ext-configure \
     soap \
     opcache
 
+RUN yes | pecl install xdebug && \
+docker-php-ext-enable xdebug;
+
+RUN { \
+		echo 'xdebug.remote_enable=true'; \
+		echo 'xdebug.remote_connect_back=1'; \
+		echo 'xdebug.remote_port=9000'; \
+	} > /usr/local/etc/php/conf.d/xdebug.ini
+
+
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
@@ -68,7 +78,6 @@ RUN curl -L https://getcomposer.org/installer -o composer-setup.php && \
     # Remove cache and tmp files
     rm -rf /var/cache/apk/*
 
-VOLUME /var/www/html
 
 # Defaults
 
@@ -93,6 +102,9 @@ RUN sed -i '/PermitRootLogin without-password/c\PermitRootLogin yes' /etc/ssh/ss
 COPY 000-default.conf /etc/apache2/sites-available/
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+WORKDIR /var/www/html
+VOLUME /var/www/html
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
