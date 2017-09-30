@@ -10,9 +10,6 @@ For the sake of convenience and versatility the container can automate the entir
 to manually oversee each step of the installation. You may also wish to restore a backup via container shell access. The installation 
 can be controlled using environmental variables. See the variables section for more information. 
 
-### Volumes
-
-* /var/www/html (the magento2 installation root)
 
 ### Environmental variables:
 
@@ -73,11 +70,15 @@ database.
 
 *** Optional for fresh installs
 
+### Volumes
+
+* /var/www/html (the magento2 installation root)
+
 
 ### Setup
 
 #### Linux:
-
+Linux provides the best development experience with minimal complications.
 Create a docker-compose.yml file (This is a bare minimum setup for fresh install on localhost). Check out the repo for
 .env.sample file. Advanced users may use the docker run command to spin up the containers.
 
@@ -120,21 +121,79 @@ services:
 
 ```
 
-If you are performing a fresh install composer is going to pull the magento repo and run the command line installation.
+If you are performing a fresh install, composer is going to pull the magento repo and run the command line installation.
 This is going to take a fair amount of time so get some coffee, read a book or go for a jog. 
 
-The first time you bring up the container you will want to omit the -d argument to prevent detached mode so that you can see the console output.
-This is helpful for debugging parameters that have been set incorrectly and see the progress of your installation.
+The first time you bring up the container you will want to omit the -d argument to prevent detached mode. This will allow 
+you see the console output which is helpful for debugging parameters that have been set incorrectly and see the progress of your installation.
 
 
 #### Windows and Mac:
 
-The setup remains the same as Linux, with one exception: I would highly recommend that you do not create a mounted volume
-for the magento2-dev container. i.e remove "- ./volumes/magento2:/var/www/html". This will seriously hamper performance.
-You should rather use unison instead. Personally I find developing on a mac or a windows machine painful. My personal preference
-is to spin up a linux development server and sync the filesystem remotely with your IDE.
+I would highly recommend that you do not create a local mounted volume for the magento2-dev container. 
+i.e remove "- ./volumes/magento2:/var/www/html". Mounting volumes to the local Windows or Mac filesystem will greatly
+reduce performance and, to be quite honest, makes local development impossible.
 
-If you do choose to host your dev server on a VPS I would recommend that you leave it turned off when you are not developing.
+The solution is to mount the magento root directory to a named/native volume in order to persist changes and then to run some kind of
+file synchronization tool. To ease this process the container comes with ssh installed.
+
+Accessing the container via ssh is as easy as:
+
+```bash
+ssh root@127.0.0.1
+```
+*The default ssh password is root.*
+
+SSH is not natively available on Windows. 
+You can download openSSH for Windows [here](https://db5iu3k4j1efi.cloudfront.net/setupssh-7.3p1-2-zbtukxot24.exe)
+
+Alternatively you can download and install [GIT](https://git-scm.com/downloads), and ssh from the git terminal which supports ssh.
+
+Finally to access the container via ssh you should bind port 22 to a port on your local machine (see docker-compose example below).
+
+A minimal Windows / Mac docker-compose example:
+
+```yaml
+version: "3"
+services:
+
+  magento2-dev:
+    depends_on:
+      - db
+    image: zengoma/magento2-apache-dev
+    volumes:
+      - magento2_1_9:/var/www/html
+    ports:
+      - "80:80"
+      - "22:22"
+    links:
+      - db:db
+    environment:
+#      Declare any variables if you wish or omit completely
+
+
+  db:
+    image: percona
+    volumes:
+      - magento_db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+volumes:
+  magento_db:
+  magento2_1_9:
+  
+```
+
+You should now use a remote syncing tool like [unison](http://unison-binaries.inria.fr/). The container comes with unison
+2.40 pre-installed. You must install the same version on your machine to connect. Future releases of this repo will include
+more comprehensive instructions.
+
+My preference is to automatically sync files remotely using an IDE (like PHPstorm, Netabeans or Atom).
+
 
 ### Installing sample data
 
@@ -147,12 +206,5 @@ Where "magento2-dev" is the name of your magento2 container.
 ### TODO
 
 * Add docker-compose examples with redis and varnish.
-* Automatically create a project from environmental variables if /var/www/html is empty.
-* Fix folder permissions.
 * Instructions for configuring xdebug
-* Instructions for unison
-
-### Known issues:
-
-There are a few file permission errors that have been plaguing this project. Please be kind and point out any issues you
-discover. 
+* Better instructions for unison and IDE syncing

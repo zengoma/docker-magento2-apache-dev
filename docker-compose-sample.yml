@@ -2,7 +2,6 @@ version: "3"
 services:
 
   magento2-dev:
-    restart: unless-stopped
     image: zengoma/magento2-apache-dev
     ports:
       - "80:80"
@@ -26,7 +25,6 @@ services:
       # You should add the extra variables you want to configure (this is the bare minimum for an automated build)
 
   db:
-    restart: unless-stopped
     image: percona
     volumes:
       - ./volumes/database:/var/www/html

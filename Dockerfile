@@ -14,6 +14,8 @@ RUN apt-get update \
     lynx \
     psmisc \
     cron \
+    openssh-server \
+    unison-all \
   && apt-get clean
 
 RUN mkdir -p /var/spool/cron/crontabs/ \
@@ -84,6 +86,9 @@ ENV MAGENTO_VERSION 2.2.0
 ENV BASE_URL http://127.0.0.1
 ENV BACKEND_FRONTNAME admin
 ENV USE_REWRITES 0
+
+RUN  echo "root\nroot" | (passwd);
+RUN sed -i '/PermitRootLogin without-password/c\PermitRootLogin yes' /etc/ssh/sshd_config && systemctl enable ssh;
 
 COPY 000-default.conf /etc/apache2/sites-available/
 COPY docker-entrypoint.sh /usr/local/bin/

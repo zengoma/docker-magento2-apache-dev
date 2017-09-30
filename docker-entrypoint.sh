@@ -29,35 +29,37 @@ cron_jobs(){
 if ! [ -e index.php -a -e bin/magento ]; then
   echo >&2 "Magento2 not found in $PWD - creating now..."
 
-  if ! [ -z ${MAGENTO_PUBLIC_KEY+x} ] && ! [ -z ${MAGENTO_PRIVATE_KEY+x} ]; then
+  if [ -z ${MAGENTO_PUBLIC_KEY+x} ] || [ -z ${MAGENTO_PRIVATE_KEY+x} ]; then
     echo >&2 "You must set the following environmental variables to get the integrator package MAGENTO_PUBLIC_KEY , MAGENTO_PRIVATE_KEY "
     echo >&2 "You may optionally set MAGENTO_VERSION (default 2.2.0) "
     echo >&2 "This container will continue to run, you may access it via 'docker exec <this-container> sh' to perform manual installs or backups.."
+
+  else
+
+      if [ "$(ls -A)" ]; then
+        echo >&2 "WARNING: $PWD please empty the mounted volume on the host and try again..."
+        ( set -x; ls -A; sleep 10 )
+      fi
+
+      composer global config http-basic.repo.magento.com ${MAGENTO_PUBLIC_KEY} ${MAGENTO_PRIVATE_KEY};
+      composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition:${MAGENTO_VERSION} /var/www/html;
+
+      # Set the pre-installation magento folder permissions
+      find var vendor pub/static pub/media app/etc -type f -exec chmod g+w {} \; \
+      && find var vendor pub/static pub/media app/etc -type d -exec chmod g+ws {} \; \
+      && chown -R :www-data . && chmod u+x bin/magento;
   fi
-
-  if [ "$(ls -A)" ]; then
-    echo >&2 "WARNING: $PWD is not empty - press Ctrl+C now if this is an error!"
-    ( set -x; ls -A; sleep 10 )
-  fi
-
-  composer global config http-basic.repo.magento.com ${MAGENTO_PUBLIC_KEY} ${MAGENTO_PRIVATE_KEY};
-  composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition:${MAGENTO_VERSION} /var/www/html;
-
-  # Set the pre-installation magento folder permissions
-  find var vendor pub/static pub/media app/etc -type f -exec chmod g+w {} \; \
-  && find var vendor pub/static pub/media app/etc -type d -exec chmod g+ws {} \; \
-  && chown -R :www-data . && chmod u+x bin/magento;
 
 fi
 
 if ! [ -e app/etc/env.php ]; then
 
 
-    if ! [ -z ${ADMIN_FIRSTNAME+x} ] \
-    && ! [ -z ${ADMIN_LASTNAME+x} ] \
-    && ! [ -z ${ADMIN_EMAIL+x} ] \
-    && ! [ -z ${ADMIN_USER+x} ] \
-    && ! [ -z ${ADMIN_PASSWORD+x} ]; then
+    if [ -z ${ADMIN_FIRSTNAME+x} ] \
+    || [ -z ${ADMIN_LASTNAME+x} ] \
+    || [ -z ${ADMIN_EMAIL+x} ] \
+    || [ -z ${ADMIN_USER+x} ] \
+    || [ -z ${ADMIN_PASSWORD+x} ]; then
 
         echo >&2 "Magento package has been downloaded but not installed"
         echo >&2 "Please visit your host address in the browser to manually setup your magento 2 installation"
@@ -104,11 +106,12 @@ if ! [ -e /var/spool/cron/crontabs/www-data ]; then
     cron_jobs;
 fi
 
-if ! [ -e magento_umask ]; then
+#if ! [ -e magento_umask ]; then
+#
+#    echo 'magento_umask 002' > magento_umask;
+#
+#fi
 
-    echo 'magento_umask 002' > magento_umask;
-
-fi
-
+service ssh start;
 
 exec "$@"
