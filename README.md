@@ -74,6 +74,19 @@ database.
 
 * /var/www/html (the magento2 installation root)
 
+### Cron
+
+While cron jobs are normally considered a separate concern for a separate container, the default magento 2 cron jobs are tightly
+coupled with the installations. Thus for convenience cron has already been setup in the container for the www-data user:
+
+```bash
+crontab -u www-data -l
+
+* * * * * /usr/local/bin/php /var/www/html/bin/magento cron:run | grep -v 'Ran jobs by schedule' >> /var/www/html/var/log/magento.cron.log
+* * * * * /usr/local/bin/php /var/www/html/update/cron.php >> /var/www/html/var/log/update.cron.log
+* * * * * /usr/local/bin/php /var/www/html/bin/magento setup:cron:run >> /var/www/html/var/log/setup.cron.log
+
+```
 
 ### Setup
 

@@ -19,9 +19,9 @@ cron_jobs(){
     #write out current crontab
     crontab -l > mycron
     #echo new cron into cron file
-    echo "* * * * * /usr/bin/php $PWD/bin/magento cron:run | grep -v 'Ran jobs by schedule' >> $PWD/var/log/magento.cron.log" >> mycron
-    echo "* * * * * /usr/bin/php $PWD/update/cron.php >> $PWD/var/log/update.cron.log" >> mycron
-    echo "* * * * * /usr/bin/php $PWD/bin/magento setup:cron:run >> $PWD/var/log/setup.cron.log" >> mycron
+    echo "* * * * * /usr/local/bin/php $PWD/bin/magento cron:run | grep -v 'Ran jobs by schedule' >> $PWD/var/log/magento.cron.log" >> mycron
+    echo "* * * * * /usr/local/bin/php $PWD/update/cron.php >> $PWD/var/log/update.cron.log" >> mycron
+    echo "* * * * * /usr/local/bin/php $PWD/bin/magento setup:cron:run >> $PWD/var/log/setup.cron.log" >> mycron
     #install new cron file
     crontab -u www-data mycron
     rm mycron
