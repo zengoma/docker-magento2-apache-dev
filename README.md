@@ -7,8 +7,8 @@ for magento 2 module and theme developers.
 ### Installation options.
 
 For the sake of convenience and versatility the container can automate the entire installation process or you may choose
-to manually oversee each step of the installation. You may also wish to restore a backup via container shell access. The installation 
-can be controlled using environmental variables. See the variables section for more information. 
+to manually oversee each step of the installation. You may also wish to restore a backup via container shell access. The installation
+can be controlled using environmental variables. See the variables section for more information.
 
 
 ### Environmental variables:
@@ -120,7 +120,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_USER: ${ADMIN_USER}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      
+
 
   db:
     image: percona
@@ -135,15 +135,15 @@ services:
 ```
 
 If you are performing a fresh install, composer is going to pull the magento repo and run the command line installation.
-This is going to take a fair amount of time so get some coffee, read a book or go for a jog. 
+This is going to take a fair amount of time so get some coffee, read a book or go for a jog.
 
-The first time you bring up the container you will want to omit the -d argument to prevent detached mode. This will allow 
+The first time you bring up the container you will want to omit the -d argument to prevent detached mode. This will allow
 you see the console output which is helpful for debugging parameters that have been set incorrectly and see the progress of your installation.
 
 
 #### Windows and Mac:
 
-I would highly recommend that you do not create a local mounted volume for the magento2-dev container. 
+I would highly recommend that you DO NOT create a local mounted volume for the magento2-dev container.
 i.e remove "- ./volumes/magento2:/var/www/html". Mounting volumes to the local Windows or Mac filesystem will greatly
 reduce performance and, to be quite honest, makes local development impossible.
 
@@ -157,7 +157,7 @@ ssh root@127.0.0.1
 ```
 *The default ssh password is root.*
 
-SSH is not natively available on Windows. 
+SSH is not natively available on Windows.
 You can download openSSH for Windows [here](https://db5iu3k4j1efi.cloudfront.net/setupssh-7.3p1-2-zbtukxot24.exe)
 
 Alternatively you can download and install [GIT](https://git-scm.com/downloads), and ssh from the git terminal which supports ssh.
@@ -198,7 +198,7 @@ services:
 volumes:
   magento_db:
   magento2_1_9:
-  
+
 ```
 
 You should now use a remote syncing tool like [unison](http://unison-binaries.inria.fr/). The container comes with unison
@@ -215,6 +215,10 @@ docker-compose exec magento2-dev ./bin/magento sampledata:deploy && ./bin/magent
 ```
 
 Where "magento2-dev" is the name of your magento2 container.
+
+### Xdebug
+
+This container runs xdebug by default. You can listen on port 9000 for debug information. Adavnced users can go ahead and set this up. Future releases will contain more detailed information for users unfamiliar with the xdebug setup.
 
 ### TODO
 

@@ -3,7 +3,8 @@ set -euo pipefail
 
 set_permissions(){
     chown -R www-data:www-data $PWD;
-    chown chmod g+s $PWD; # Very permissive, this will get you fired in production.
+    find var pub/static pub/media app/etc -type f -exec chmod g+w {} \;
+    find var pub/static pub/media app/etc -type d -exec chmod g+ws {} \;
 }
 
 reset_generated(){
